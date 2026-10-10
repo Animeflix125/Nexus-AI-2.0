@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXUS AI</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #0b0d14;
+  color: #f1f3fa;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 18px;
+  background: #141722;
+  border-bottom: 1px solid #292d3b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg,#7358ff,#25c8d8);
+  border-radius: 14px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+h1 { font-size: 19px; margin: 0 0 5px; }
+.subtitle { font-size: 12px; color: #9ca5bb; }
+
+main {
+  max-width: 720px;
+  margin: auto;
+  padding: 18px;
+}
+
+.welcome {
+  text-align: center;
+  padding: 25px 8px 20px;
+}
+
+.welcome h2 { font-size: 27px; margin-bottom: 8px; }
+.welcome p { color: #9ca5bb; font-size: 14px; line-height: 1.6; }
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.suggestions button {
+  background: #171b29;
+  border: 1px solid #30364a;
+  color: #dfe3f2;
+  border-radius: 20px;
+  padding: 10px 12px;
+}
+
+#chat {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+.message {
+  max-width: 90%;
+  padding: 13px 15px;
+  border-radius: 16px;
+  line-height: 1.6;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #191e2d;
+  border: 1px solid #292f42;
+}
+
+.user {
+  align-self: flex-end;
+  background: #5542bd;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: #171b27;
+  border: 1px solid #30364a;
+  border-radius: 15px;
+  position: sticky;
+  bottom: 5px;
+}
+
+input {
+  min-width: 0;
+  flex: 1;
+  padding: 12px 8px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: white;
+  font-size: 16px;
+}
+
+#send {
+  background: #7864ff;
+  border: 0;
+  border-radius: 11px;
+  padding: 0 17px;
+  color: white;
+  font-weight: bold;
+}
+
+#send:disabled { opacity: 0.5; }
+
+#clear {
+  display: block;
+  margin: 14px auto;
+  color: #a9b0c4;
+  background: transparent;
+  border: 0;
+  padding: 10px;
+}
+
+.note {
+  text-align: center;
+  color: #858da2;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 14px 0;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">N</div>
+  <div>
+    <h1>NEXUS AI</h1>
+    <div class="subtitle">Your personal assistant · Demo mode</div>
+  </div>
+</header>
+
+<main>
+  <section class="welcome" id="welcome">
+    <h2>Think. Ask. Discover.</h2>
+    <p>Your own chatbot starts here.<br>
+    Ask a question or choose a prompt below.</p>
+  </section>
+
+  <div class="suggestions" id="suggestions">
+    <button data-prompt="Explain artificial intelligence simply">
+      What is AI?
+    </button>
+    <button data-prompt="Give me a Python beginner challenge">
+      Learn Python
+    </button>
+    <button data-prompt="Explain black holes simply">
+      Explore space
+    </button>
+  </div>
+
+  <section id="chat" aria-live="polite"></section>
+
+  <form class="composer" id="form">
+    <input id="input" maxlength="500"
+      placeholder="Message NEXUS..."
+      autocomplete="off" required>
+    <button id="send" type="submit">Send</button>
+  </form>
+
+  <button id="clear">Clear conversation</button>
+
+  <p class="note">
+    Prototype mode: replies use simple built-in rules,
+    not a real AI model. Don't enter private information.
+  </p>
+</main>
+
+<script>
+const chat = document.getElementById("chat");
+const form = document.getElementById("form");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+
+function addMessage(text, type) {
+  const message = document.createElement("div");
+  message.className = "message " + type;
+  message.textContent = text;
+  chat.appendChild(message);
+  message.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function getReply(text) {
+  const q = text.toLowerCase();
+
+  if (q.includes("your name") || q.includes("who are you")) {
+    return "I'm NEXUS AI, your chatbot project. Right now, I'm running in demo mode.";
+  }
+
+  if (q.includes("artificial intelligence") || q === "what is ai?") {
+    return "Artificial intelligence (AI) is a field of computing that develops systems capable of tasks such as recognizing patterns, understanding language and making predictions.";
+  }
+
+  if (q.includes("python")) {
+    return "Python challenge: Write a program that asks for two numbers and prints their sum. Hint: use input(), int() and the + operator.";
+  }
+
+  if (q.includes("black hole") || q.includes("space")) {
+    return "A black hole is a region of space where gravity is so strong that even light cannot escape from within its event horizon.";
+  }
+
+  if (q.includes("hello") || q.includes("hey") || q === "hi") {
+    return "Hey! I'm NEXUS AI. Ask me about programming, science or technology. Remember, this demo has limited built-in replies.";
+  }
+
+  if (q.includes("help")) {
+    return "Try asking about AI, Python, space or my name. This prototype uses simple keyword rules, so I can't answer general questions like a real language model.";
+  }
+
+  return "I received your message: \"" + text +
+    "\"\n\nI don't have a real language model connected yet. My next upgrade will let me generate more flexible answers.";
+}
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+  send.disabled = true;
+
+  // Demo response only; no external API is called.
+  addMessage(getReply(text), "bot");
+  send.disabled = false;
+  input.focus();
+});
+
+document.getElementById("suggestions").addEventListener(
+  "click", function(event) {
+    const button = event.target.closest("[data-prompt]");
+    if (!button) return;
+
+    input.value = button.dataset.prompt;
+    form.requestSubmit();
+  }
+);
+
+document.getElementById("clear").addEventListener("click", function() {
+  chat.replaceChildren();
+  document.getElementById("welcome").style.display = "";
+});
+
+form.addEventListener("submit", function() {
+  document.getElementById("welcome").style.display = "none";
+});
+
+</script>
+</body>
+</html>
